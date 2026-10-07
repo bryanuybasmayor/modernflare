@@ -1,0 +1,6 @@
+# Build dependency — never shipped. The compiled output (css/tailwind.css) IS
+# committed, so the static demo works with no install and no build step.
+node_modules/
+
+# OS cruft
+.DS_Store

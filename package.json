@@ -1,0 +1,15 @@
+{
+  "name": "modern-flare-hair-design",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static demo site for Modern Flare Hair Design (Melfort, SK). Tailwind is compiled ahead of time into css/tailwind.css, so the shipped page has no runtime CDN dependency.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build:css": "tailwindcss -c js/tailwind-config.js -i css/tailwind.src.css -o css/tailwind.css --minify",
+    "watch:css": "tailwindcss -c js/tailwind-config.js -i css/tailwind.src.css -o css/tailwind.css --watch",
+    "build": "npm run build:css"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

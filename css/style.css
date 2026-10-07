@@ -1,0 +1,541 @@
+/* ==========================================================================
+   Modern Flare Hair Design — css/style.css
+   --------------------------------------------------------------------------
+   Layer 1 : Web font imports
+   Layer 2 : Design tokens (mirrors js/tailwind-config.js)
+   Layer 3 : Base overrides (after Tailwind's preflight)
+   Layer 4 : Component classes — the editorial furniture: hairlines, a
+             service index that lifts onto a graphite panel, the hero
+             colophon, outline display type, buttons and the mobile menu.
+
+   ART DIRECTION
+   Pure monochrome. The accent is white (no gold, no blush, no gradient
+   "luxury" cues) and depth comes from charcoal / smoke surfaces + hairlines.
+   Every "card" from a typical spa template is replaced by a ruled row.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. WEB FONTS
+   'Great Vibes'  → the brush script of the logo's "Modern Flare"
+   'Montserrat'   → the geometric sans of "Hair Design" + all UI copy
+   NOTE: when this becomes a WordPress theme, swap this @import for an
+   enqueued stylesheet or a bundled @font-face block.
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   2. DESIGN TOKENS
+   -------------------------------------------------------------------------- */
+/* Three surfaces, a three-step ink scale, two rules.
+   The shared tokens mirror the `colors` block in js/tailwind-config.js — keep
+   the two lists in step. Two deliberate exceptions: primary ink is Tailwind's
+   own built-in `white`, and `edge` lives here only, because it outlines
+   buttons and utility classes cannot express a pseudo/hover border colour. */
+:root {
+  /* Surfaces, darkest first. */
+  --mf-noir: #050505; /* page ground */
+  --mf-charcoal: #1a1a1a; /* raised panel — team section */
+  --mf-smoke: #2a2a2a; /* lifted surface — service band, index-row hover */
+
+  /* Ink — one cool-grey family. Contrast on noir: 19.0 : 8.0 : 5.7. */
+  --mf-white: #ffffff; /* primary */
+  --mf-ash: #9ca3af; /* secondary */
+  --mf-dim: #7e8899; /* tertiary */
+
+  /* Rules — one hairline for structure, one edge for interactive outlines. */
+  --mf-hair: rgba(255, 255, 255, 0.12);
+  --mf-edge: rgba(255, 255, 255, 0.32);
+
+  --mf-header-height: 5rem;
+  --mf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --------------------------------------------------------------------------
+   3. BASE OVERRIDES
+   -------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  /* Keeps in-page anchors clear of the sticky header. */
+  scroll-padding-top: var(--mf-header-height);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--mf-noir);
+  color: var(--mf-ash);
+  font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400; /* body copy stays legible on noir at small sizes */
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Inverted selection — ink white, noir text. */
+::selection {
+  background-color: var(--mf-white);
+  color: var(--mf-noir);
+}
+
+/* Visible keyboard focus ring (accessibility). */
+:focus-visible {
+  outline: 1px solid var(--mf-white);
+  outline-offset: 3px;
+}
+
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--mf-smoke) var(--mf-noir);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Header states (toggled by js/main.js)
+   -------------------------------------------------------------------------- */
+#site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.5s var(--mf-ease), border-color 0.5s var(--mf-ease),
+    backdrop-filter 0.5s var(--mf-ease);
+}
+
+#site-header.is-scrolled {
+  background-color: rgba(5, 5, 5, 0.94);
+  border-bottom-color: var(--mf-hair);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
+/* --------------------------------------------------------------------------
+   Logo — white type on transparency, so it only ever sits on noir/charcoal.
+   Scaled by height and keeps its natural 4.56:1 ratio, so it stays sharp.
+   -------------------------------------------------------------------------- */
+.mf-logo {
+  display: block;
+  width: auto;
+  height: 2.25rem; /* 36px — mobile */
+  max-width: 12rem;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.6));
+}
+
+@media (min-width: 640px) {
+  .mf-logo {
+    height: 2.5rem; /* 40px — tablet / desktop */
+  }
+}
+
+/* Larger lockup, used in the footer. */
+.mf-logo--lg {
+  height: 2.75rem;
+  max-width: 16rem;
+}
+
+@media (min-width: 640px) {
+  .mf-logo--lg {
+    height: 3.25rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Imagery — desaturated so the page stays a two-tone composition.
+   -------------------------------------------------------------------------- */
+.mf-image {
+  filter: grayscale(22%) contrast(1.05);
+  transition: transform 1.4s var(--mf-ease), filter 0.7s var(--mf-ease);
+}
+
+.mf-figure:hover .mf-image {
+  transform: scale(1.02);
+  filter: grayscale(0%) contrast(1.06);
+}
+
+/* Soft top/bottom fades blending photos into the noir body. */
+.mf-fade-top::before,
+.mf-fade-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 32%;
+  pointer-events: none;
+}
+
+.mf-fade-top::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0));
+}
+
+.mf-fade-bottom::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0));
+}
+
+/* Rotated marginalia text on the hero's left edge (desktop only). */
+.mf-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* --------------------------------------------------------------------------
+   HERO COLOPHON
+   The studio figures that rule across the base of the hero. All six cells —
+   three labels, three values — are placed into ONE shared two-row grid: the
+   label and value of each fact share a column, and `grid-auto-flow: column`
+   fills those columns top-to-bottom, so a row is sized by its tallest cell
+   anywhere in that row. Every label therefore sits on one shared baseline and
+   every value on the next, at any width, even when one label wraps to two
+   lines and another does not.
+
+   Deliberately NOT subgrid: sharing the parent's row tracks does the same job
+   with no dependency on subgrid support (Chrome 117 / Safari 16), so the
+   alignment holds in every browser instead of degrading where it isn't
+   supported.
+   -------------------------------------------------------------------------- */
+.mf-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  column-gap: 1.25rem;
+}
+
+/* The wrapper <div>s exist so each term stays grouped with its definition
+   inside the <dl> (the pattern the HTML spec sanctions). `display: contents`
+   dissolves their boxes, lifting the <dt>/<dd> up to be the grid cells
+   declared on .mf-facts above. */
+.mf-fact {
+  display: contents;
+}
+
+.mf-fact__label {
+  padding-bottom: 0.5rem; /* the label → value gap, kept inside the rule below */
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--mf-ash);
+}
+
+.mf-fact__value {
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--mf-white);
+}
+
+/* Hairline between the facts. The wrapper <div>s are invisible (display:
+   contents), so the rule has to go on their <dt>/<dd> — the cells that actually
+   exist in the grid — and both cells of a column carry it so the line runs
+   unbroken from the label through to the value. The first column needs no
+   divider against the page edge. */
+.mf-facts > .mf-fact:nth-child(2) > *,
+.mf-facts > .mf-fact:nth-child(3) > * {
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--mf-hair);
+}
+
+@media (min-width: 640px) {
+  .mf-fact__value {
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mf-facts {
+    column-gap: 2rem;
+  }
+
+  .mf-facts > .mf-fact:nth-child(2) > *,
+  .mf-facts > .mf-fact:nth-child(3) > * {
+    padding-left: 2rem;
+  }
+
+  .mf-fact__value {
+    font-size: 1.875rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Display type — outlined (white stroke, transparent fill) for product names.
+   Falls back to solid white wherever text-stroke isn't supported.
+   -------------------------------------------------------------------------- */
+.mf-outline {
+  color: var(--mf-white);
+  transition: color 0.5s var(--mf-ease), -webkit-text-stroke-color 0.5s var(--mf-ease);
+}
+
+@supports (-webkit-text-stroke: 1px white) or (text-stroke: 1px white) {
+  .mf-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--mf-ash);
+  }
+}
+
+/* Hovering the name fills it in — a quiet bit of delight. */
+.mf-word:hover .mf-outline {
+  color: var(--mf-white);
+  -webkit-text-stroke-color: var(--mf-white);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation link: hairline underline that draws in on hover / current page.
+   -------------------------------------------------------------------------- */
+.mf-nav-link {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+  color: var(--mf-white);
+  transition: opacity 0.4s var(--mf-ease);
+}
+
+.mf-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 0;
+  background-color: var(--mf-white);
+  transition: width 0.5s var(--mf-ease);
+}
+
+.mf-nav-link:hover::after,
+.mf-nav-link:focus-visible::after,
+.mf-nav-link[aria-current='true']::after {
+  width: 100%;
+}
+
+.mf-nav-link[aria-current='true'] {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons — squared, wide tracking. White is the only accent, so the primary
+   button is ink-white and its hover state inverts to an outline.
+   -------------------------------------------------------------------------- */
+.mf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 1rem 2.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: background-color 0.45s var(--mf-ease), color 0.45s var(--mf-ease),
+    border-color 0.45s var(--mf-ease);
+}
+
+.mf-btn--solid {
+  background-color: var(--mf-white);
+  color: var(--mf-noir);
+}
+
+.mf-btn--solid:hover,
+.mf-btn--solid:focus-visible {
+  background-color: transparent;
+  color: var(--mf-white);
+  border-color: var(--mf-white);
+}
+
+.mf-btn--outline {
+  background-color: transparent;
+  color: var(--mf-white);
+  border-color: var(--mf-edge);
+}
+
+.mf-btn--outline:hover,
+.mf-btn--outline:focus-visible {
+  background-color: var(--mf-white);
+  color: var(--mf-noir);
+  border-color: var(--mf-white);
+}
+
+/* Small arrow that nudges forward on hover — used on row links. */
+.mf-arrow {
+  display: inline-block;
+  transition: transform 0.5s var(--mf-ease);
+}
+
+.mf-index-row:hover .mf-arrow,
+.mf-index-row:focus-visible .mf-arrow {
+  transform: translateX(10px);
+}
+
+/* --------------------------------------------------------------------------
+   THE SERVICE INDEX
+   A ruled, full-width list — the alternative to a three-card grid. Colours are
+   declared here (not with Tailwind utilities) so the row can invert cleanly on
+   hover without !important.
+   -------------------------------------------------------------------------- */
+.mf-index-row {
+  display: grid;
+  align-items: baseline;
+  column-gap: 1.5rem;
+  row-gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  border-bottom: 1px solid var(--mf-hair);
+  transition: background-color 0.5s var(--mf-ease);
+}
+
+@media (min-width: 1024px) {
+  .mf-index-row {
+    padding: 3.25rem 1.5rem;
+  }
+}
+
+.mf-row-num {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  color: var(--mf-ash);
+}
+
+.mf-row-title {
+  color: var(--mf-white);
+  transition: color 0.4s var(--mf-ease);
+}
+
+.mf-row-desc,
+.mf-row-list {
+  color: var(--mf-ash);
+  transition: color 0.4s var(--mf-ease);
+}
+
+.mf-row-arrow {
+  color: var(--mf-white);
+  transition: color 0.4s var(--mf-ease), transform 0.5s var(--mf-ease);
+}
+
+.mf-index-row:hover .mf-row-arrow,
+.mf-index-row:focus-visible .mf-row-arrow {
+  color: var(--mf-white);
+  transform: translateX(12px);
+}
+
+.mf-row-list {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 2;
+}
+
+/* Hover / focus state — the row lifts onto a graphite panel rather than
+   inverting to a white band, so the index stays quiet on the noir page. */
+.mf-index-row:hover,
+.mf-index-row:focus-visible {
+  background-color: var(--mf-smoke);
+}
+
+/* The row's own text colours already hold on the graphite panel (white 14.4:1,
+   ash 5.8:1), so the hover state only needs to move the surface and the arrow. */
+
+/* --------------------------------------------------------------------------
+   THE SERVICE BAND (section 2 of index.html) is composed from utilities
+   alone: a smoke strip carrying two lines of plain type. (That class lives in
+   css/tailwind.css, so re-run `npm run build:css` if you change it.) There is
+   deliberately no marquee anywhere on the page, and no custom rules here.
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   SCROLL REVEAL — classes are added by js/main.js, so with JavaScript off the
+   content simply renders in full (progressive enhancement).
+   -------------------------------------------------------------------------- */
+.mf-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  /* background-color is included so elements that are ALSO reveals (the
+     inverting service rows) keep their hover transition. */
+  transition: opacity 1s var(--mf-ease), transform 1s var(--mf-ease),
+    background-color 0.5s var(--mf-ease);
+  will-change: opacity, transform;
+}
+
+.mf-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE NAVIGATION
+   -------------------------------------------------------------------------- */
+.mf-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s var(--mf-ease), opacity 0.4s var(--mf-ease);
+  opacity: 0;
+}
+
+.mf-menu.is-open {
+  max-height: 32rem;
+  opacity: 1;
+}
+
+/* Hamburger → cross animation. */
+.mf-burger span {
+  display: block;
+  height: 1px;
+  width: 24px;
+  background-color: var(--mf-white);
+  transition: transform 0.4s var(--mf-ease), opacity 0.3s var(--mf-ease);
+}
+
+.mf-burger span + span {
+  margin-top: 6px;
+}
+
+.mf-burger[aria-expanded='true'] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mf-burger[aria-expanded='true'] span:nth-child(2) {
+  opacity: 0;
+}
+
+.mf-burger[aria-expanded='true'] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .mf-reveal,
+  .mf-menu,
+  .mf-burger span,
+  .mf-image,
+  .mf-index-row {
+    transition: none !important;
+  }
+
+  .mf-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

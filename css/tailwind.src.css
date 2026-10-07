@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Modern Flare Hair Design — css/tailwind.src.css
+   --------------------------------------------------------------------------
+   BUILD INPUT — never served directly. Tailwind compiles this file into
+   css/tailwind.css using the design tokens in js/tailwind-config.js:
+
+       npm install          (once)
+       npm run build:css    one-off, minified — the file index.html links
+       npm run watch:css    rebuild on save while editing
+
+   index.html loads the compiled sheet first and css/style.css second, so the
+   custom component classes always win over Tailwind's utilities.
+   ========================================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

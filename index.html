@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Modern Flare Hair Design — index.html
+  ----------------------------------------------------------------------------
+  A static, single-page demo for an elegant local hair salon in Melfort, SK.
+  Will later be converted into a WordPress theme, so the markup is:
+
+    • SEMANTIC  — header / nav / main / section / article / figure / address /
+                  footer, with a logical heading hierarchy (one <h1>).
+    • MODULAR   — each page block is a self-contained <section> with an id and
+                  maps 1:1 to a future WP template part.
+    • COMMENTED — every section is labelled; repeated elements are documented
+                  once (service row, retail word, footer column).
+
+  COLOUR — three surfaces, a three-step ink scale, two rules. Nothing else.
+  Every value below is defined once in js/tailwind-config.js and mirrored in
+  css/style.css; the markup uses only these names. Tailwind is compiled ahead
+  of time (`npm run build:css`) — the page loads no runtime CDN.
+
+      noir      #050505   page ground
+      charcoal  #1A1A1A   raised panel — team section
+      smoke     #2A2A2A   lifted strip — service band, index-row hover
+
+      white     #FFFFFF   primary ink            19.0:1 on noir
+      ash       #9CA3AF   secondary ink — copy    8.0:1 on noir
+      dim       #7E8899   tertiary ink — "Closed" 5.7:1 on noir
+
+      hair  rgba(255,255,255,.12)  every border and divider on the page
+      edge  rgba(255,255,255,.32)  interactive outlines only (buttons)
+
+    One cool-grey family throughout. No warm accent (no gold, no blush), and
+    no ad-hoc white-at-opacity values anywhere in the markup. Imagery uses
+    two noir scrims: bg-noir/60 behind text, bg-noir/20 for bare tinting.
+
+  ART DIRECTION — "print editorial / gallery index"
+    No rounded "luxury" cards and no centred spa-template composition. Instead:
+      · a left-aligned, bottom-anchored hero in oversized uppercase type
+      · marginalia numbering (01 — Our Story) beside a 12-column grid
+      · services as a ruled INDEX of rows that lift onto a graphite panel
+      · a smoke service band under the hero (no marquee, no motion)
+      · outlined (stroke-only) product names
+      · a footer wordmark that spans the full page measure
+
+  ASSETS
+    • Logo: img/modernflare-logo.png (white type on transparency)
+      → only ever placed on the noir / charcoal / smoke surfaces.
+    • Photography: remote placeholders (Unsplash). Before launch, replace each
+      with a local file in /img — the data-image-slot attributes mark every
+      swap point, e.g. img/hero-salon-interior.jpg. Each <img> carries a
+      srcset/sizes pair, so keep that structure when you swap the files in
+      (one candidate per breakpoint, real pixel widths, no upscaling).
+
+  STYLESHEETS & SCRIPTS (load order matters)
+    1. css/tailwind.css        compiled from js/tailwind-config.js by the
+                               Tailwind CLI — run `npm run build:css` after
+                               editing markup or tokens. Nothing loads at
+                               runtime; there is no CDN.
+    2. css/style.css           (fonts, tokens, base overrides, components)
+    3. js/main.js              (mobile nav, sticky header, scroll reveals)
+  ============================================================================
+-->
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- SEO / sharing ------------------------------------------------------ -->
+    <title>Modern Flare Hair Design | Hair Salon in Melfort, SK</title>
+    <meta
+      name="description"
+      content="Modern Flare Hair Design — Melfort's premier hair studio for over 38 years. Expert haircuts, colour, styling, barbering, massage therapy and professional Redken, Design Me & Biolage retail. Call 306-752-3330 to book."
+    />
+    <meta name="theme-color" content="#050505" />
+    <meta property="og:title" content="Modern Flare Hair Design | Melfort, SK" />
+    <meta
+      property="og:description"
+      content="Celebrating 38+ years in Melfort. Haircuts, colour, styling, massage therapy and professional retail. Call 306-752-3330 to book."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="img/modernflare-logo.png" />
+
+    <!-- Favicon uses the salon logo ---------------------------------------- -->
+    <link rel="icon" href="img/modernflare-logo.png" />
+    <link rel="apple-touch-icon" href="img/modernflare-logo.png" />
+
+    <!-- Web fonts (also imported in css/style.css; preconnect speeds them up) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- 1. Compiled Tailwind — `npm run build:css` regenerates this file from
+           js/tailwind-config.js. Shipping the compiled sheet keeps the page
+           free of the runtime CDN and of any build-time JavaScript.          -->
+    <link rel="stylesheet" href="css/tailwind.css" />
+
+    <!-- 2. Custom CSS — font imports, design tokens, component classes.      -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body class="bg-noir font-sans text-ash antialiased selection:bg-white selection:text-noir">
+    <!-- Keyboard users can jump straight to the content --------------------- -->
+    <a
+      href="#main"
+      class="sr-only-focusable absolute left-4 top-4 z-[60] bg-white px-5 py-3 text-xs uppercase tracking-label text-noir"
+      >Skip to content</a
+    >
+
+    <!-- =====================================================================
+         UTILITY BAR (scrolls away — not sticky)
+         The masthead strip of a printed page: address, hours, phone. It gives
+         the page a publication feel and puts the phone number above the fold.
+         ===================================================================== -->
+    <div class="hidden border-b border-hair bg-noir sm:block">
+      <div
+        class="mx-auto flex max-w-frame items-center justify-between gap-8 px-5 py-3 text-[0.65rem] uppercase tracking-label text-ash lg:px-10"
+      >
+        <p>712 Main St, Melfort, SK</p>
+        <p aria-hidden="true" class="hidden text-ash lg:block">Mon &ndash; Fri · 9:00 AM &ndash; 5:00 PM</p>
+        <a href="tel:+13067523330" class="text-white transition-opacity duration-500 hover:opacity-60">
+          Call to Book &nbsp;·&nbsp; 306-752-3330
+        </a>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         HEADER / NAVBAR
+         Sticky, transparent over the hero and then washed in Deep Noir by
+         js/main.js (`.is-scrolled`). The logo sits on a dark surface so the
+         white lockup stays sharp at every breakpoint.
+         ===================================================================== -->
+    <header id="site-header" class="w-full">
+      <div class="mx-auto flex max-w-frame items-center justify-between gap-6 px-5 py-4 lg:px-10 lg:py-5">
+        <!-- Brand / logo ------------------------------------------------- -->
+        <a href="#home" class="flex items-center" aria-label="Modern Flare Hair Design — home">
+          <img
+            src="img/modernflare-logo.png"
+            alt="Modern Flare Hair Design"
+            class="mf-logo"
+            width="456"
+            height="100"
+            fetchpriority="high"
+          />
+        </a>
+
+        <!-- Desktop navigation ------------------------------------------ -->
+        <nav class="hidden items-center gap-10 lg:flex" aria-label="Primary">
+          <a href="#home" class="mf-nav-link text-[0.7rem] font-medium uppercase tracking-label" data-nav-link>Home</a>
+          <a href="#services" class="mf-nav-link text-[0.7rem] font-medium uppercase tracking-label" data-nav-link>Services</a>
+          <a href="#team" class="mf-nav-link text-[0.7rem] font-medium uppercase tracking-label" data-nav-link>Our Team</a>
+          <a href="#contact" class="mf-nav-link text-[0.7rem] font-medium uppercase tracking-label" data-nav-link>Contact</a>
+        </nav>
+
+        <!-- Desktop primary CTA: they book by phone ---------------------- -->
+        <div class="hidden lg:block">
+          <a href="tel:+13067523330" class="mf-btn mf-btn--solid px-6 py-3">Call to Book</a>
+        </div>
+
+        <!-- Mobile hamburger (controlled by js/main.js) ------------------ -->
+        <button
+          id="nav-toggle"
+          type="button"
+          class="mf-burger -mr-2 flex h-11 w-11 flex-col items-center justify-center lg:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Open navigation menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      <!-- Mobile navigation panel ------------------------------------------
+           Collapsed with max-height (see .mf-menu in css/style.css) so it
+           animates smoothly without measuring heights in JavaScript.        -->
+      <nav id="mobile-menu" class="mf-menu bg-noir lg:hidden" aria-label="Mobile">
+        <div class="border-t border-hair">
+          <ul class="flex flex-col px-5 pb-6 pt-4">
+            <li><a href="#home" class="block border-b border-hair py-4 text-sm uppercase tracking-label text-white">Home</a></li>
+            <li><a href="#services" class="block border-b border-hair py-4 text-sm uppercase tracking-label text-white">Services</a></li>
+            <li><a href="#team" class="block border-b border-hair py-4 text-sm uppercase tracking-label text-white">Our Team</a></li>
+            <li><a href="#contact" class="block border-b border-hair py-4 text-sm uppercase tracking-label text-white">Contact</a></li>
+          </ul>
+
+          <!-- Phone-first call to action + opening hours reminder -->
+          <div class="px-5 pb-8">
+            <a href="tel:+13067523330" class="mf-btn mf-btn--solid w-full">Call to Book</a>
+            <p class="mt-4 text-center text-[0.65rem] uppercase tracking-label text-ash">Mon &ndash; Fri · 9:00 AM &ndash; 5:00 PM</p>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- =====================================================================
+         MAIN
+         ===================================================================== -->
+    <main id="main">
+      <!-- ===================================================================
+           1 · HERO
+           Edge-to-edge salon interior under a dark overlay, but composed like
+           a magazine cover: type anchored bottom-left, a rotated marginalia
+           label on the outer edge, and the facts/CTAs pulled into a ruled
+           strip along the base.
+           =================================================================== -->
+      <section id="home" class="relative flex min-h-[92vh] flex-col justify-end overflow-hidden">
+        <!-- Background imagery (replace with a local salon-interior photo) -->
+        <img
+          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1920&q=75"
+          srcset="
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=480&q=75 480w,
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=768&q=75 768w,
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=960&q=75 960w,
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1280&q=75 1280w,
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1920&q=75 1920w,
+            https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=2560&q=70 2560w
+          "
+          sizes="100vw"
+          alt="The interior of Modern Flare Hair Design, with styling chairs and mirrors"
+          class="mf-image absolute inset-0 h-full w-full object-cover"
+          data-image-slot="hero-salon-interior"
+          width="2000"
+          height="1333"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <div class="absolute inset-0 bg-noir/60"></div>
+        <div class="absolute inset-0 bg-fade-noir"></div>
+
+        <!-- Rotated marginalia on the outer edge (desktop) -->
+        <span
+          class="mf-vertical absolute bottom-28 left-6 z-10 hidden text-[0.6rem] uppercase tracking-label text-dim lg:block"
+          aria-hidden="true"
+          >Est. Melfort &nbsp;·&nbsp; 712 Main St</span
+        >
+
+        <!-- Hero content ---------------------------------------------------- -->
+        <div class="relative z-10 mx-auto w-full max-w-frame px-5 pb-14 pt-40 lg:px-16 lg:pb-20">
+          <!-- Script signature: used once per screen at most -->
+          <p class="font-script text-3xl text-white animate-fade-in sm:text-5xl">Elegance &amp; Style.</p>
+
+          <h1 class="mt-6 max-w-5xl text-display font-normal uppercase text-white animate-fade-up">
+            Melfort&rsquo;s Premier Hair Design Studio.
+          </h1>
+
+          <!-- Ruled base strip, set as two tiers rather than three columns:
+               the standfirst and the calls to action share the top line, and
+               the studio figures rule across the full measure beneath them. -->
+          <div class="mt-12 border-t border-hair pt-8 lg:mt-14">
+            <!-- Tier 1 · standfirst + calls to action -->
+            <div class="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-10">
+              <p class="text-sm leading-loose text-ash sm:text-base lg:col-span-8 lg:text-lg">
+                For over 38 years our studio on Main Street has paired expert craft with an
+                unhurried, relaxed atmosphere — haircuts, colour and styling, barbering,
+                massage therapy, and the professional products to keep it all looking
+                beautiful at home.
+              </p>
+
+              <div class="flex flex-wrap items-center gap-3 lg:col-span-4 lg:justify-end">
+                <a href="tel:+13067523330" class="mf-btn mf-btn--solid">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
+                  </svg>
+                  Call to Book
+                </a>
+                <a href="#services" class="mf-btn mf-btn--outline">Services</a>
+              </div>
+            </div>
+
+            <!-- Tier 2 · the colophon. All six cells are placed into one shared
+                 two-row grid, so every label shares a baseline and every value
+                 the next — they stay aligned even when a label wraps. -->
+            <dl class="mf-facts mt-10 border-t border-hair pt-6 lg:mt-12">
+              <div class="mf-fact">
+                <dt class="mf-fact__label">Serving Melfort</dt>
+                <dd class="mf-fact__value">38+ yrs</dd>
+              </div>
+              <div class="mf-fact">
+                <dt class="mf-fact__label">Client rating</dt>
+                <dd class="mf-fact__value">4.6/5</dd>
+              </div>
+              <div class="mf-fact">
+                <dt class="mf-fact__label">Find us</dt>
+                <dd class="mf-fact__value">Main St</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           2 · SERVICE BAND
+           The plainest possible statement of what the studio does and what
+           stands behind it, set on a smoke band so it reads as its own lifted
+           strip between the hero and the story — and so it never reads as a
+           repeat of the team panel further down. Two lines, no grid, no motion.
+           =================================================================== -->
+      <div class="bg-smoke">
+        <div class="mx-auto max-w-frame px-5 py-9 lg:px-10 lg:py-11">
+          <p class="text-xl font-normal text-white sm:text-2xl lg:text-3xl">
+            Haircuts &middot; Colour &middot; Barbering &middot; Massage
+          </p>
+          <p class="mt-3 text-[0.65rem] font-medium uppercase tracking-label text-ash">
+            38 years on Main Street &middot; Redken &middot; Design Me &middot; Biolage
+          </p>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           3 · OUR STORY — "38 Years of Excellence"
+           Marginalia label in the left column, the story in the right. The
+           script line carries the celebration; the prose sits in two columns
+           beneath it like a spread, not a centred stack.
+           =================================================================== -->
+      <section id="about" class="border-b border-hair bg-noir px-5 py-section lg:px-10 lg:py-section-lg">
+        <div class="mx-auto grid max-w-frame gap-10 lg:grid-cols-12 lg:gap-16">
+          <!-- Marginalia -->
+          <p class="flex items-baseline gap-3 text-[0.65rem] uppercase tracking-label lg:col-span-3">
+            <span class="text-white">01</span><span class="text-ash">Our Story</span>
+          </p>
+
+          <div class="lg:col-span-9" data-reveal>
+            <p class="font-script text-5xl leading-[1.05] text-white sm:text-7xl lg:text-[7rem]">
+              38 Years of Excellence
+            </p>
+
+            <h2 class="mt-10 text-headline font-normal text-white lg:max-w-3xl">
+              A Melfort tradition, refined.
+            </h2>
+
+            <div class="mt-10 grid gap-8 text-base leading-loose sm:grid-cols-2">
+              <p>
+                Modern Flare Hair Design has been part of Melfort for more than 38 years. In
+                that time we&rsquo;ve styled generations of families, celebrated weddings,
+                first days of school and fresh starts — and we&rsquo;re still on the same
+                stretch of Main Street we started on.
+              </p>
+              <p>
+                Thank you to the Melfort community for trusting us with your hair year after
+                year. Our 4.6 out of 5 client rating belongs to you as much as it does to us:
+                it&rsquo;s built on consistency, care, and taking the time to get the details
+                right.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           4 · THE STUDIO SERVICES
+           An index, not a card grid: ruled rows, oversized titles, and a dark
+           graphite lift on hover/focus. Each row is one <a> so the whole line
+           is the tap target for the phone number.
+           =================================================================== -->
+      <section id="services" class="bg-noir px-5 py-section lg:px-10 lg:py-section-lg">
+        <div class="mx-auto max-w-frame">
+          <!-- Section introduction -->
+          <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+            <p class="flex items-baseline gap-3 text-[0.65rem] uppercase tracking-label lg:col-span-3">
+              <span class="text-white">02</span><span class="text-ash">The Studio Services</span>
+            </p>
+            <div class="lg:col-span-9" data-reveal>
+              <h2 class="text-headline font-normal text-white">Expertise, in every detail.</h2>
+              <p class="mt-6 max-w-2xl text-base leading-loose">
+                One studio, three disciplines. Every appointment begins with a proper
+                consultation and ends with styling advice you can actually repeat at home.
+              </p>
+            </div>
+          </div>
+
+          <!-- Service index --------------------------------------------------
+               Row anatomy: number · title · description · offering list · arrow
+               (see .mf-index-row in css/style.css for the invert interaction). -->
+          <div class="mt-16">
+            <!-- Row 01 — Hair & Styling -->
+            <a href="tel:+13067523330" class="mf-index-row md:grid-cols-12" data-reveal>
+              <span class="mf-row-num md:col-span-1">01</span>
+              <h3 class="mf-row-title text-2xl font-normal sm:text-3xl lg:col-span-4 lg:text-4xl">
+                Hair &amp; Styling
+              </h3>
+              <p class="mf-row-desc text-sm leading-loose md:col-span-4">
+                Women&rsquo;s cuts and restyles, dimensional colour, and finishing that holds
+                its shape long after you leave the chair.
+              </p>
+              <p class="mf-row-list md:col-span-2">
+                Cuts &middot; Colour<br />
+                Blowouts &middot; Treatments
+              </p>
+              <span class="mf-row-arrow text-2xl md:col-span-1 md:text-right" aria-hidden="true">&rarr;</span>
+            </a>
+
+            <!-- Row 02 — Barbering & Men's Cuts -->
+            <a href="tel:+13067523330" class="mf-index-row md:grid-cols-12" data-reveal data-reveal-delay="100">
+              <span class="mf-row-num md:col-span-1">02</span>
+              <h3 class="mf-row-title text-2xl font-normal sm:text-3xl lg:col-span-4 lg:text-4xl">
+                Barbering &amp; Men&rsquo;s Cuts
+              </h3>
+              <p class="mf-row-desc text-sm leading-loose md:col-span-4">
+                Clean, classic and contemporary men&rsquo;s cutting — precise lines, a
+                comfortable atmosphere and no fuss.
+              </p>
+              <p class="mf-row-list md:col-span-2">
+                Cuts &middot; Fades<br />
+                Tapers &middot; Beard tidy-ups
+              </p>
+              <span class="mf-row-arrow text-2xl md:col-span-1 md:text-right" aria-hidden="true">&rarr;</span>
+            </a>
+
+            <!-- Row 03 — Massage Therapy -->
+            <a href="tel:+13067523330" class="mf-index-row md:grid-cols-12" data-reveal data-reveal-delay="200">
+              <span class="mf-row-num md:col-span-1">03</span>
+              <h3 class="mf-row-title text-2xl font-normal sm:text-3xl lg:col-span-4 lg:text-4xl">
+                Massage Therapy
+              </h3>
+              <p class="mf-row-desc text-sm leading-loose md:col-span-4">
+                A calm, private treatment room inside the studio — the quietest way to finish
+                a hair appointment, or a reason to visit on its own.
+              </p>
+              <p class="mf-row-list md:col-span-2">
+                Relaxation<br />
+                Therapeutic &middot; Tension relief
+              </p>
+              <span class="mf-row-arrow text-2xl md:col-span-1 md:text-right" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+
+          <!-- Booking note: phone only, no online portal --------------------- -->
+          <p class="mt-10 text-sm uppercase tracking-label text-ash">
+            We book by phone &mdash; there is no online booking.
+            <a href="tel:+13067523330" class="ml-2 text-white underline decoration-white/40 underline-offset-4 transition-opacity duration-500 hover:opacity-60">
+              Call 306-752-3330
+            </a>
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           5 · PHOTO BAND
+           Full-bleed photograph used like a magazine pull-quote: caption in
+           the top corner, script line anchored bottom-left on the grid — not
+           centred over the image.
+           =================================================================== -->
+      <section class="mf-figure relative h-[65vh] min-h-[420px] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1920&q=75"
+          srcset="
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=480&q=75 480w,
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=768&q=75 768w,
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=960&q=75 960w,
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1280&q=75 1280w,
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1920&q=75 1920w,
+            https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=2560&q=70 2560w
+          "
+          sizes="100vw"
+          alt=""
+          class="mf-image absolute inset-0 h-full w-full object-cover"
+          data-image-slot="editorial-close-up"
+          loading="lazy"
+          width="2000"
+          height="1333"
+          decoding="async"
+        />
+        <div class="absolute inset-0 bg-noir/60"></div>
+        <div class="mf-fade-top"></div>
+        <div class="mf-fade-bottom"></div>
+
+        <p class="absolute left-5 top-10 z-10 text-[0.6rem] uppercase tracking-label text-ash lg:left-16">
+          Modern Flare Hair Design &nbsp;·&nbsp; 712 Main St, Melfort
+        </p>
+
+        <div class="absolute inset-x-0 bottom-10 z-10 mx-auto max-w-frame px-5 lg:px-16">
+          <p class="font-script text-4xl leading-tight text-white sm:text-6xl lg:text-7xl">
+            Where style meets serenity.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           6 · PROFESSIONAL RETAIL
+           Product names are set as outlined display type — a print device that
+           turns a retail list into the visual moment of the page.
+           =================================================================== -->
+      <section id="retail" class="bg-noir px-5 py-section lg:px-10 lg:py-section-lg">
+        <div class="mx-auto grid max-w-frame gap-14 lg:grid-cols-12 lg:gap-16">
+          <!-- Image -->
+          <figure class="mf-figure relative aspect-[4/5] overflow-hidden bg-charcoal lg:col-span-4" data-reveal>
+            <!-- One column of four on desktop, full width below lg -------- -->
+            <img
+              src="https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=1024&q=75"
+              srcset="
+                https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=480&q=75 480w,
+                https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=768&q=75 768w,
+                https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=960&q=75 960w,
+                https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=1440&q=70 1440w
+              "
+              sizes="(min-width: 1024px) 30vw, 100vw"
+              alt="Professional salon retail products arranged on a shelf"
+              class="mf-image absolute inset-0 h-full w-full object-cover"
+              data-image-slot="retail-products"
+              loading="lazy"
+              width="1400"
+              height="1750"
+              decoding="async"
+            />
+            <div class="absolute inset-0 bg-noir/20"></div>
+          </figure>
+
+          <!-- Copy + product word list -->
+          <div class="lg:col-span-8" data-reveal data-reveal-delay="120">
+            <p class="flex items-baseline gap-3 text-[0.65rem] uppercase tracking-label">
+              <span class="text-white">03</span><span class="text-ash">Professional Retail</span>
+            </p>
+
+            <h2 class="mt-6 text-headline font-normal text-white">Salon results, every day at home.</h2>
+
+            <p class="mt-6 max-w-2xl text-base leading-loose">
+              The right products make a good haircut last. We stock the professional lines
+              our stylists use in the chair, so you can keep your colour rich and your hair
+              healthy between visits — and we&rsquo;ll show you exactly how to use them.
+            </p>
+
+            <!-- Product lines: outlined display type, hairline-separated -->
+            <ul class="mt-12">
+              <li class="mf-word flex flex-wrap items-baseline justify-between gap-4 border-b border-hair py-8">
+                <span class="mf-outline text-4xl font-normal uppercase sm:text-5xl lg:text-6xl">Redken</span>
+                <span class="text-[0.65rem] uppercase tracking-label text-ash">Colour care &amp; styling</span>
+              </li>
+              <li class="mf-word flex flex-wrap items-baseline justify-between gap-4 border-b border-hair py-8">
+                <span class="mf-outline text-4xl font-normal uppercase sm:text-5xl lg:text-6xl">Design Me</span>
+                <span class="text-[0.65rem] uppercase tracking-label text-ash">Finishing &amp; treatment</span>
+              </li>
+              <li class="mf-word flex flex-wrap items-baseline justify-between gap-4 border-b border-hair py-8">
+                <span class="mf-outline text-4xl font-normal uppercase sm:text-5xl lg:text-6xl">Biolage</span>
+                <span class="text-[0.65rem] uppercase tracking-label text-ash">Botanical care &amp; repair</span>
+              </li>
+            </ul>
+
+            <p class="mt-8 text-[0.65rem] uppercase tracking-label text-ash">
+              Available in-studio only &mdash; ask your stylist for a recommendation.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           7 · OUR TEAM
+           Copy-led block (no invented stylist names). When real bios and
+           headshots exist, drop the commented card template in below and this
+           section becomes fully staffed.
+           =================================================================== -->
+      <section id="team" class="bg-charcoal px-5 py-section lg:px-10 lg:py-section-lg">
+        <div class="mx-auto grid max-w-frame gap-14 lg:grid-cols-12 lg:gap-16">
+          <!-- Copy -->
+          <div class="lg:col-span-7" data-reveal>
+            <p class="flex items-baseline gap-3 text-[0.65rem] uppercase tracking-label">
+              <span class="text-white">04</span><span class="text-ash">Our Team</span>
+            </p>
+
+            <h2 class="mt-6 text-headline font-normal text-white">The hands behind the flare.</h2>
+
+            <p class="mt-9 max-w-2xl text-base leading-loose">
+              Our team is made up of experienced stylists and a registered massage therapist
+              who have chosen to build their careers in Melfort. Between them they cover
+              women&rsquo;s and men&rsquo;s cutting, colour, styling and therapeutic massage —
+              and they keep training so their techniques stay current.
+            </p>
+            <p class="mt-6 max-w-2xl text-base leading-loose">
+              You&rsquo;ll be looked after by the same faces visit after visit, which is
+              exactly how a 38-year-old salon should feel.
+            </p>
+
+            <a href="tel:+13067523330" class="mf-btn mf-btn--outline mt-10">Call to Book</a>
+          </div>
+
+          <!-- Image -->
+          <figure class="mf-figure relative aspect-[4/5] overflow-hidden bg-noir lg:col-span-5" data-reveal data-reveal-delay="120">
+            <!-- Five columns of twelve on desktop, full width below lg ----- -->
+            <img
+              src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1280&q=75"
+              srcset="
+                https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=480&q=75 480w,
+                https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=768&q=75 768w,
+                https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=960&q=75 960w,
+                https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1440&q=70 1440w
+              "
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              alt="A stylist finishing a client's hair inside the studio"
+              class="mf-image absolute inset-0 h-full w-full object-cover"
+              data-image-slot="team-at-work"
+              loading="lazy"
+              width="1400"
+              height="1750"
+              decoding="async"
+            />
+            <div class="absolute inset-0 bg-noir/20"></div>
+          </figure>
+        </div>
+
+        <!--
+          ====================================================================
+          WORDPRESS NOTE — stylist cards
+          Each team member becomes one <article>. Swap the static copy for the
+          WP loop: while ( have_posts() ) : the_post();
+          ====================================================================
+          <article class="border-t border-hair pt-6">
+            <img src="img/team-member.jpg" alt="Portrait of [Stylist Name]" class="aspect-square w-full object-cover" />
+            <h3 class="mt-6 text-xl font-normal text-white">[Stylist Name]</h3>
+            <p class="mt-1 text-[0.65rem] uppercase tracking-label text-ash">[Senior Stylist]</p>
+          </article>
+        -->
+      </section>
+
+      <!-- ===================================================================
+           8 · LOCATION, HOURS & BOOKING
+           The hours are set as a typographic table — the times are the display
+           type, hairline-ruled, with "Closed" kept quiet.
+           =================================================================== -->
+      <section id="contact" class="bg-noir px-5 py-section lg:px-10 lg:py-section-lg">
+        <div class="mx-auto max-w-frame">
+          <!-- Heading row -->
+          <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+            <p class="flex items-baseline gap-3 text-[0.65rem] uppercase tracking-label lg:col-span-3">
+              <span class="text-white">05</span><span class="text-ash">Visit</span>
+            </p>
+            <div class="lg:col-span-9" data-reveal>
+              <h2 class="text-display font-normal uppercase text-white">712 Main St, Melfort.</h2>
+              <p class="mt-8 max-w-2xl text-base leading-loose">
+                Call us at
+                <a href="tel:+13067523330" class="text-white underline decoration-white/40 underline-offset-4 transition-opacity duration-500 hover:opacity-60">306-752-3330</a>
+                to book your appointment. We&rsquo;re open Monday to Friday and closed on
+                weekends, so plan ahead for Saturday events and we&rsquo;ll make sure
+                you&rsquo;re ready.
+              </p>
+            </div>
+          </div>
+
+          <!-- Hours + booking columns -->
+          <div class="mt-20 grid gap-14 lg:grid-cols-12 lg:gap-16">
+            <!-- Opening hours -->
+            <div class="lg:col-span-7" data-reveal>
+              <h3 class="eyebrow">Hours of Operation</h3>
+              <dl class="mt-6">
+                <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-hair py-6">
+                  <dt class="text-lg font-normal text-white sm:text-xl">Monday &ndash; Friday</dt>
+                  <dd class="text-xl font-normal text-white sm:text-2xl">9:00 AM &ndash; 5:00 PM</dd>
+                </div>
+                <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-hair py-6">
+                  <dt class="text-lg font-normal text-ash sm:text-xl">Saturday</dt>
+                  <dd class="text-xl font-normal text-dim sm:text-2xl">Closed</dd>
+                </div>
+                <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-hair py-6">
+                  <dt class="text-lg font-normal text-ash sm:text-xl">Sunday</dt>
+                  <dd class="text-xl font-normal text-dim sm:text-2xl">Closed</dd>
+                </div>
+              </dl>
+              <p class="mt-6 text-xs leading-relaxed text-ash">
+                Booking by phone only &mdash; please call during opening hours.
+              </p>
+            </div>
+
+            <!-- Book + address -->
+            <div class="lg:col-span-5" data-reveal data-reveal-delay="100">
+              <h3 class="eyebrow">Book an Appointment</h3>
+              <a
+                href="tel:+13067523330"
+                class="mt-6 block text-3xl font-normal tracking-tight text-white transition-opacity duration-500 hover:opacity-60 sm:text-4xl"
+                >306-752-3330</a
+              >
+              <a href="tel:+13067523330" class="mf-btn mf-btn--solid mt-8">Call to Book</a>
+              <p class="mt-6 text-xs leading-relaxed text-ash">
+                Walk-ins are welcomed when the schedule allows, but calling ahead is the
+                surest way to get the time — and the stylist — you want.
+              </p>
+
+              <address class="mt-10 border-t border-hair pt-8 not-italic text-sm leading-loose text-ash">
+                Modern Flare Hair Design<br />
+                712 Main St<br />
+                Melfort, SK S0E 1A0<br />
+                Canada
+              </address>
+              <a
+                href="https://www.google.com/maps/dir/?api=1&amp;destination=712+Main+St,+Melfort,+SK+S0E+1A0"
+                class="mt-6 inline-flex items-center gap-3 text-[0.65rem] uppercase tracking-label text-white transition-opacity duration-500 hover:opacity-60"
+                target="_blank"
+                rel="noopener"
+              >
+                Get Directions <span class="mf-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Location map (swap for a static map image if you would rather not
+               load Google on page view) ------------------------------------- -->
+          <div class="mt-20 border-t border-hair pt-10" data-reveal>
+            <iframe
+              title="Map showing Modern Flare Hair Design at 712 Main St, Melfort, Saskatchewan"
+              src="https://www.google.com/maps?q=712%20Main%20St,%20Melfort,%20SK%20S0E%201A0&amp;output=embed"
+              class="h-[320px] w-full grayscale"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================================
+         FOOTER
+         Repeated logo, then the studio wordmark at display scale across the
+         full measure — the print "cover line" that closes the page.
+         ===================================================================== -->
+    <footer class="border-t border-hair bg-noir px-5 pb-32 pt-section lg:px-10 lg:pb-section">
+      <div class="mx-auto max-w-frame">
+        <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <!-- Brand ------------------------------------------------------- -->
+          <div class="lg:col-span-5">
+            <img
+              src="img/modernflare-logo.png"
+              alt="Modern Flare Hair Design"
+              class="mf-logo mf-logo--lg"
+              width="456"
+              height="100"
+              loading="lazy"
+            />
+            <p class="mt-8 max-w-md text-sm leading-loose">
+              Melfort&rsquo;s premier hair design studio for over 38 years — haircuts, colour,
+              styling, barbering, massage therapy and professional retail, all in one calm,
+              monochrome space.
+            </p>
+            <a href="tel:+13067523330" class="mf-btn mf-btn--solid mt-9">Call to Book</a>
+          </div>
+
+          <!-- Navigate ---------------------------------------------------- -->
+          <nav class="lg:col-span-3" aria-label="Footer">
+            <h2 class="eyebrow">Explore</h2>
+            <ul class="mt-6 space-y-3 text-sm">
+              <li><a href="#home" class="text-white transition-opacity duration-500 hover:opacity-60">Home</a></li>
+              <li><a href="#services" class="text-white transition-opacity duration-500 hover:opacity-60">Services</a></li>
+              <li><a href="#team" class="text-white transition-opacity duration-500 hover:opacity-60">Our Team</a></li>
+              <li><a href="#retail" class="text-white transition-opacity duration-500 hover:opacity-60">Professional Retail</a></li>
+              <li><a href="#contact" class="text-white transition-opacity duration-500 hover:opacity-60">Contact</a></li>
+            </ul>
+          </nav>
+
+          <!-- Visit ------------------------------------------------------- -->
+          <div class="lg:col-span-4">
+            <h2 class="eyebrow">Visit</h2>
+            <address class="mt-6 not-italic text-sm leading-loose">
+              712 Main St<br />
+              Melfort, SK S0E 1A0<br />
+              <a href="tel:+13067523330" class="text-white transition-opacity duration-500 hover:opacity-60">306-752-3330</a>
+            </address>
+            <dl class="mt-6 space-y-1 text-sm">
+              <div class="flex justify-between gap-4">
+                <dt>Mon &ndash; Fri</dt>
+                <dd class="text-white">9:00 AM &ndash; 5:00 PM</dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt>Sat &ndash; Sun</dt>
+                <dd class="text-dim">Closed</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Closing call to action -----------------------------------------
+             Phone-first, because the studio takes bookings by phone only. Set
+             in UI type at display scale so the number — not a decorative
+             sentence — is what the eye lands on last. The script face is
+             reserved for the short signature lines used earlier in the page.
+             ------------------------------------------------------------------ -->
+        <div class="mt-16 grid gap-10 border-t border-hair pt-10 lg:grid-cols-12 lg:items-end">
+          <div class="lg:col-span-6">
+            <h2 class="eyebrow">Book an appointment</h2>
+            <p class="mt-5 max-w-md text-sm leading-loose">
+              We book by phone &mdash; no online portal, no waiting list. Call during
+              opening hours and we&rsquo;ll find a time that suits you.
+            </p>
+          </div>
+
+          <div class="lg:col-span-6 lg:text-right">
+            <a
+              href="tel:+13067523330"
+              class="inline-block text-3xl text-white transition-opacity duration-500 hover:opacity-70 sm:text-4xl lg:text-5xl"
+            >
+              306-752-3330
+            </a>
+            <p class="mt-3 text-[0.65rem] uppercase tracking-label text-ash">
+              Mon &ndash; Fri &middot; 9:00 AM &ndash; 5:00 PM
+            </p>
+          </div>
+        </div>
+
+        <!-- Wordmark: the page's sign-off. Ruled off from the call to action
+             above so it reads as a colophon rather than the tail of the
+             sentence before it. `overflow-hidden` absorbs tracking bleed, and
+             it is aria-hidden because the name is already announced by the
+             logo and the copyright line. ------------------------------------ -->
+        <div class="mt-16 pt-12">
+          <div class="overflow-hidden" aria-hidden="true">
+            <p class="whitespace-nowrap text-wordmark font-normal uppercase text-white">Modern Flare</p>
+          </div>
+        </div>
+
+        <div class="mt-10 flex flex-col items-start justify-between gap-4 border-t border-hair pt-8 text-[0.65rem] uppercase tracking-label text-ash sm:flex-row sm:items-center">
+          <p>&copy; <span id="current-year">2026</span> Modern Flare Hair Design</p>
+          <p>Haircuts &middot; Colour &amp; Styling &middot; Barbering &middot; Massage Therapy</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =====================================================================
+         STICKY MOBILE CALL BAR
+         Inverted to white so it reads as the primary action on small screens.
+         ===================================================================== -->
+    <aside class="fixed inset-x-0 bottom-0 z-40 bg-white lg:hidden" aria-label="Quick booking">
+      <a
+        href="tel:+13067523330"
+        class="flex items-center justify-center gap-3 py-4 text-[0.65rem] font-medium uppercase tracking-label text-noir"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
+        </svg>
+        Call to Book &nbsp;·&nbsp; 306-752-3330
+      </a>
+    </aside>
+
+    <!-- 4. Frontend behaviour: mobile nav, sticky header, scroll reveals. --- -->
+    <script src="js/main.js"></script>
+  </body>
+</html>
